@@ -22,11 +22,22 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-SERPER_API_KEY = os.getenv("SERPER_API_KEY")
+def get_secret(name):
+    try:
+        value = st.secrets.get(name)
+        if value:
+            return value
+    except Exception:
+        pass
+
+    return os.getenv(name)
+
+
+GOOGLE_API_KEY = get_secret("GOOGLE_API_KEY")
+SERPER_API_KEY = get_secret("SERPER_API_KEY")
 
 if not GOOGLE_API_KEY:
-    st.error("GOOGLE_API_KEY missing in .env")
+    st.error("Google API key missing in Streamlit Secrets.")
     st.stop()
 
 client = genai.Client(api_key=GOOGLE_API_KEY)
